@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct PromptItem: Identifiable, Codable, Equatable {
     var id = UUID()
@@ -29,6 +30,7 @@ struct DashboardView: View {
     
     @State private var showPromptManager: Bool = false
     @State private var showInfoManager: Bool = false
+    @State private var isScanning: Bool = false
     
     // Prompt state
     @State private var editingTitle: String = ""
@@ -342,6 +344,69 @@ WORK EXPERIENCE:
                                 )
                         }
                         .buttonStyle(.plain)
+                        
+                        HStack(spacing: 16) {
+                            // Card 1: Custom Prompts
+                            Button(action: {
+                                showPromptManager = true
+                            }) {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    HStack {
+                                        Image(systemName: "terminal.fill")
+                                            .font(.system(size: 16))
+                                            .foregroundColor(.blue)
+                                        Text("Custom Prompts")
+                                            .font(.system(size: 13, weight: .bold))
+                                            .foregroundColor(.white)
+                                    }
+                                    Text("Configure LLM persona & system instructions.")
+                                        .font(.system(size: 10))
+                                        .foregroundColor(.gray)
+                                        .multilineTextAlignment(.leading)
+                                        .lineLimit(2)
+                                }
+                                .padding(12)
+                                .frame(width: 170, height: 80)
+                                .background(Color(white: 0.14))
+                                .cornerRadius(8)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color(white: 0.2), lineWidth: 1)
+                                )
+                            }
+                            .buttonStyle(.plain)
+
+                            // Card 2: Candidate Resume
+                            Button(action: {
+                                showInfoManager = true
+                            }) {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    HStack {
+                                        Image(systemName: "doc.text.fill")
+                                            .font(.system(size: 16))
+                                            .foregroundColor(.green)
+                                        Text("Candidate Info")
+                                            .font(.system(size: 13, weight: .bold))
+                                            .foregroundColor(.white)
+                                    }
+                                    Text("Upload & scan resume to prefer candidate info.")
+                                        .font(.system(size: 10))
+                                        .foregroundColor(.gray)
+                                        .multilineTextAlignment(.leading)
+                                        .lineLimit(2)
+                                }
+                                .padding(12)
+                                .frame(width: 170, height: 80)
+                                .background(Color(white: 0.14))
+                                .cornerRadius(8)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color(white: 0.2), lineWidth: 1)
+                                )
+                            }
+                            .buttonStyle(.plain)
+                        }
+                        .padding(.top, 12)
                     }
                     .padding(.vertical, 40)
                     .frame(maxWidth: .infinity)
@@ -665,6 +730,33 @@ WORK EXPERIENCE:
                                     .buttonStyle(.plain)
                                 }
                                 
+                                if isScanning {
+                                    HStack(spacing: 6) {
+                                        ProgressView()
+                                            .progressViewStyle(CircularProgressViewStyle(tint: .blue))
+                                            .scaleEffect(0.6)
+                                        Text("Scanning...")
+                                            .font(.system(size: 11))
+                                            .foregroundColor(.gray)
+                                    }
+                                    .padding(.leading, 8)
+                                } else {
+                                    Button(action: selectAndScanResume) {
+                                        HStack(spacing: 4) {
+                                            Image(systemName: "doc.text.viewfinder")
+                                            Text("Scan Resume (PDF/Image)")
+                                                .font(.system(size: 12, weight: .semibold))
+                                        }
+                                        .foregroundColor(.blue)
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 6)
+                                        .background(Color.blue.opacity(0.15))
+                                        .cornerRadius(6)
+                                    }
+                                    .buttonStyle(.plain)
+                                    .padding(.leading, 8)
+                                }
+                                
                                 Spacer()
                                 
                                 Text("\(editingInfoContent.split(separator: " ").count) words")
@@ -831,6 +923,116 @@ WORK EXPERIENCE:
         } else {
             onInfoChange("")
         }
+    }
+
+    private func getMimeType(for url: URL) -> String {
+        let ext = url.pathExtension.lowercased()
+        switch ext {
+        case "pdf": return "application/pdf"
+        case "png": return "image/png"
+        case "jpg", "jpeg": return "image/jpeg"
+        default: return "application/octet-stream"
+        }
+    }
+
+    private func selectAndScanResume() {
+        let panel = NSOpenPanel()
+        panel.allowedContentTypes = [.pdf, .png, .jpeg]
+        panel.allowsMultipleSelection = false
+        panel.canChooseDirectories = false
+        panel.canChooseFiles = true
+        
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        
+        do {
+            let fileData = try Data(contentsOf: url)
+            let base64Data = fileData.base64EncodedString()
+            let mimeType = getMimeType(for: url)
+            
+            isScanning = true
+            
+            performGeminiScan(base64: base64Data, mimeType: mimeType, fileName: url.lastPathComponent, fileUrl: url)
+        } catch {
+            print("Failed to read file: \(error.localizedDescription)")
+        }
+    }
+
+    private func performGeminiScan(base64: String, mimeType: String, fileName: String, fileUrl: URL) {
+        let apiKey = UserDefaults.standard.string(forKey: "gemini_api_key") ?? ""
+        if apiKey.isEmpty {
+            DispatchQueue.main.async {
+                self.isScanning = false
+                let alert = NSAlert()
+                alert.messageText = "Gemini API Key Required"
+                alert.informativeText = "Please enter your Gemini API Key in the settings input bar on the top-right before scanning."
+                alert.alertStyle = .warning
+                alert.runModal()
+            }
+            return
+        }
+        
+        let modelName = "gemini-1.5-flash"
+        guard let url = URL(string: "https://generativelanguage.googleapis.com/v1beta/models/\(modelName):generateContent?key=\(apiKey)") else {
+            DispatchQueue.main.async { self.isScanning = false }
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let payload: [String: Any] = [
+            "contents": [
+                [
+                    "parts": [
+                        [
+                            "text": "Extract and organize all candidate information, technical skills, projects, and work experience from this resume document into a clean, structured Markdown format. Do not add any conversational remarks, introductory text, or explanations. Just output the clean markdown containing the candidate's details."
+                        ],
+                        [
+                            "inlineData": [
+                                "mimeType": mimeType,
+                                "data": base64
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+        
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: payload) else {
+            DispatchQueue.main.async { self.isScanning = false }
+            return
+        }
+        request.httpBody = jsonData
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async {
+                self.isScanning = false
+                
+                if let error = error {
+                    print("Gemini API Error: \(error.localizedDescription)")
+                    return
+                }
+                
+                guard let data = data else { return }
+                
+                if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let candidates = json["candidates"] as? [[String: Any]],
+                   let firstCandidate = candidates.first,
+                   let content = firstCandidate["content"] as? [String: Any],
+                   let parts = content["parts"] as? [[String: Any]],
+                   let firstPart = parts.first,
+                   let text = firstPart["text"] as? String {
+                    
+                    self.editingInfoContent = text
+                    if self.editingInfoTitle.isEmpty {
+                        self.editingInfoTitle = fileName.replacingOccurrences(of: ".\(fileUrl.pathExtension)", with: "")
+                    }
+                } else {
+                    print("Failed to parse Gemini scan response: \(String(data: data, encoding: .utf8) ?? "nil")")
+                }
+            }
+        }.resume()
     }
 }
 

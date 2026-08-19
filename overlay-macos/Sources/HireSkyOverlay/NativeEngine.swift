@@ -741,11 +741,17 @@ final class NativeEngine: NSObject, SCStreamOutput, URLSessionDataDelegate {
         let historyToSubmit = Array(cleanedHistory.suffix(10))
         
         // 3. Build system instruction
-        let systemPrompt = """
+        var systemPrompt = """
         \(baseHumanizedWrapper)
 
         \(activePrompt)
         """
+        
+        let candidateInfo = self.activeCandidateInfo
+        if !candidateInfo.isEmpty {
+            systemPrompt += "\n\n[Candidate Resume / Experience Context]\n\(candidateInfo)\n"
+            systemPrompt += "IMPORTANT: When technical questions are asked (e.g. debouncing, caching, UI architecture), prefer matching the answer to the projects and experience listed in the Candidate Resume/Experience Context above. Say: 'I have used [concept] in my [project name] project to [how it was used]'. Keep the explanation natural and brief."
+        }
         
         sseBuffer = Data()
         lastAIResponseText = ""
