@@ -1,0 +1,194 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --bg: #ffffff;
+  --bg-soft: #f7f7f8;
+  --text: #111113;
+  --muted: #6b6b73;
+  --border: rgba(0,0,0,.08);
+  --card: rgba(255,255,255,.72);
+  --black: #111111;
+  --purple: #7c3aed;
+  --blue: #2563eb;
+  --green: #16a34a;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+/* Typography */
+h1 {
+  font-size: clamp(40px, 6vw, 68px);
+  line-height: 1;
+  letter-spacing: -3px;
+  font-weight: 800;
+  margin-bottom: 22px;
+}
+
+h2 {
+  font-size: clamp(30px, 4vw, 45px);
+  line-height: 1;
+  letter-spacing: -2px;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+h3 {
+  font-size: 20px;
+  letter-spacing: -.7px;
+  font-weight: 600;
+}
+
+p {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+/* Glassmorphism Panel / Card */
+.glass-panel {
+  background: var(--card);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.06);
+  padding: 24px;
+}
+
+/* Dashboard Specifics */
+.dash-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 25px;
+}
+
+.dash-header h3 {
+  font-size: 20px;
+  letter-spacing: -.7px;
+  margin-bottom: 3px;
+}
+
+.dash-header p {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Buttons */
+.btn {
+  border: none;
+  border-radius: 999px;
+  padding: 11px 18px;
+  font-weight: 600;
+  font-size: 13px;
+  transition: .25s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn-light {
+  background: #f2f2f3;
+  color: #111;
+}
+
+.btn-dark {
+  background: #111;
+  color: white;
+  box-shadow: 0 5px 18px rgba(0,0,0,.16);
+}
+
+.btn-dark:hover {
+  box-shadow: 0 10px 25px rgba(0,0,0,.22);
+}
+
+.mini-button {
+  padding: 8px 13px;
+  border: 1px solid var(--border);
+  background: white;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  transition: .25s ease;
+}
+
+.mini-button:hover {
+  background: #f9f9f9;
+}
+
+.btn-danger {
+  background: #fef2f2;
+  color: #ef4444;
+  border: 1px solid #fecaca;
+  border-radius: 999px;
+  padding: 11px 18px;
+  font-weight: 600;
+  font-size: 13px;
+  transition: .25s ease;
+}
+
+.btn-danger:hover {
+  background: #fee2e2;
+  transform: translateY(-2px);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(25px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeUp .8s ease both;
+}
+
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.2s; }
+.delay-3 { animation-delay: 0.3s; }

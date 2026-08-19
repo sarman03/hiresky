@@ -1,0 +1,19 @@
+# --- Core runtime ---
+websockets>=12.0            # WebSocket server (token streaming to overlay)
+openai>=1.30.0              # OpenAI streaming client (used with Gemini OpenAI compatibility)
+python-dotenv>=1.0.0        # loads GEMINI_API_KEY from .env
+PyYAML>=6.0                 # config.yaml parsing
+numpy>=1.24                 # audio buffer math
+
+# --- Audio capture + VAD ---
+sounddevice>=0.4.6          # system audio / loopback capture (PortAudio)
+webrtcvad>=2.0.10           # voice activity detection
+
+# --- Transcription ---
+faster-whisper>=1.0.0       # fast local Whisper (CTranslate2). Swap for gemini
+                            # API by setting transcription.backend: gemini
+
+# --- Screen OCR ---
+mss>=9.0.1                  # fast cross-platform screen capture
+pytesseract>=0.3.10         # Tesseract OCR bindings (needs tesseract installed)
+Pillow>=10.0.0              # image handling for OCR pre-processing

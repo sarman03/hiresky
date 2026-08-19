@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# Secrets & local config
+.env
+config.yaml
+
+# Models / caches
+models/
+*.bin
+*.pt
+
+# macOS
+.DS_Store
+overlay-macos/.build/
+overlay-macos/.swiftpm/
+*.xcodeproj/xcuserdata/
+overlay-macos/HireSky.app/
+overlay-macos/HireSky.zip
+
+# Windows / .NET
+overlay-windows/bin/
+overlay-windows/obj/
+*.user
+
+# Logs
+*.log

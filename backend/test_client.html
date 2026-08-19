@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>HireSky — WebSocket test client</title>
+<style>
+  :root { color-scheme: dark; }
+  body { font-family: -apple-system, Segoe UI, sans-serif; background:#0b0d12; color:#e6e8ee; margin:0; padding:24px; }
+  h1 { font-size:16px; font-weight:600; letter-spacing:.3px; }
+  #bar { display:flex; gap:8px; align-items:center; margin-bottom:16px; }
+  input { background:#161a22; border:1px solid #2a303c; color:#e6e8ee; border-radius:8px; padding:8px 10px; width:260px; }
+  button { background:#3b82f6; border:0; color:#fff; border-radius:8px; padding:8px 14px; cursor:pointer; }
+  #dot { width:10px; height:10px; border-radius:50%; background:#ef4444; }
+  #dot.on { background:#22c55e; }
+  .card { background:rgba(255,255,255,.04); border:1px solid #202634; border-radius:12px; padding:14px 16px; margin-bottom:12px; }
+  .label { font-size:11px; text-transform:uppercase; letter-spacing:.6px; color:#8b93a7; margin-bottom:6px; }
+  #answer { font-size:15px; line-height:1.5; white-space:pre-wrap; min-height:24px; }
+  #transcript div, #ocr { color:#aab2c5; font-size:13px; }
+  #transcript div { padding:3px 0; border-bottom:1px solid #171c26; }
+</style>
+</head>
+<body>
+  <h1>HireSky WebSocket test client</h1>
+  <div id="bar">
+    <span id="dot"></span>
+    <input id="url" value="ws://127.0.0.1:8765" />
+    <button id="connect">Connect</button>
+  </div>
+
+  <div class="card"><div class="label">Status</div><div id="status">disconnected</div></div>
+  <div class="card"><div class="label">Copilot answer (streaming)</div><div id="answer"></div></div>
+  <div class="card"><div class="label">Transcript</div><div id="transcript"></div></div>
+  <div class="card"><div class="label">On-screen (OCR)</div><div id="ocr">—</div></div>
+
+<script>
+  let ws;
+  const $ = (id) => document.getElementById(id);
+  function connect() {
+    if (ws) ws.close();
+    ws = new WebSocket($("url").value);
+    ws.onopen = () => { $("dot").classList.add("on"); $("status").textContent = "connected"; };
+    ws.onclose = () => { $("dot").classList.remove("on"); $("status").textContent = "disconnected"; };
+    ws.onmessage = (e) => {
+      const m = JSON.parse(e.data);
+      if (m.type === "status") $("status").textContent = m.text;
+      else if (m.type === "answer_start") $("answer").textContent = "";
+      else if (m.type === "token") $("answer").textContent += m.text;
+      else if (m.type === "transcript") {
+        const d = document.createElement("div"); d.textContent = m.text;
+        $("transcript").prepend(d);
+      } else if (m.type === "ocr") $("ocr").textContent = m.text;
+    };
+  }
+  $("connect").onclick = connect;
+  connect();
+</script>
+</body>
+</html>

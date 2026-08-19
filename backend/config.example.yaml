@@ -1,0 +1,66 @@
+# HireSky backend configuration.
+# Copy to config.yaml and adjust. config.yaml is git-ignored.
+
+audio:
+  sample_rate: 16000          # Whisper expects 16 kHz mono
+  channels: 1
+  block_ms: 30                # frame size fed to VAD (10 / 20 / 30 only)
+
+  # Two capture channels, each shown as a separate speaker in the chat overlay.
+  # `device` is a case-insensitive substring of a name printed by
+  #   python run.py --list-devices
+  # Set enabled: false to turn one off.
+  sources:
+    - name: "them"            # the meeting audio (Zoom etc.) via system loopback
+      device: "BlackHole"     # macOS loopback | Windows: "Stereo Mix" / "CABLE Output"
+      enabled: true
+    - name: "you"             # your own microphone
+      device: "MacBook"       # substring of your mic, e.g. "MacBook Air Microphone"
+      enabled: true
+
+  # Fallback single device, used only if `sources` above is empty.
+  input_device: "BlackHole"
+
+vad:
+  aggressiveness: 2           # 0 (permissive) .. 3 (aggressive)
+  silence_ms: 500             # trailing silence that closes an utterance
+  min_utterance_ms: 250       # ignore utterances shorter than this
+
+transcription:
+  backend: "faster-whisper"   # "faster-whisper" (local) or "gemini" (API)
+  model: "base.en"            # tiny.en / base.en / small.en / medium.en
+  device: "auto"              # auto / cpu / cuda
+  compute_type: "int8"        # int8 (cpu) / float16 (gpu)
+  language: "en"
+
+ocr:
+  enabled: true
+  interval_s: 2.0             # continuous background refresh (kept in memory)
+  # Screen rectangle to watch (pixels). width/height 0 => FULL primary monitor,
+  # so the AI always sees everything visible on screen.
+  region:
+    left: 0
+    top: 0
+    width: 0
+    height: 0
+  min_chars: 12               # ignore OCR results shorter than this
+  monitor: 1                  # mss monitor index (1 = primary)
+
+llm:
+  model: "gemini-3.1-flash-lite"   # gemini-3.1-flash-lite / gemini-3.1-pro-preview
+  temperature: 0.3
+  max_tokens: 2048            # coding answers (brute force + optimized) need room
+  # System prompt configuration. Sent dynamically by the overlay dashboard on session start.
+  system_prompt: ""
+  # Trigger a completion after this much new transcript (chars) accumulates,
+  # or when an utterance ends, whichever comes first.
+  trigger_chars: 160
+  # Rolling context window sent to the model (chars of transcript + ocr).
+  context_chars: 4000
+
+server:
+  host: "127.0.0.1"
+  port: 8765
+
+logging:
+  level: "INFO"               # DEBUG / INFO / WARNING / ERROR

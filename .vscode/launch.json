@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:HireSky}/overlay-macos",
+            "name": "Debug HireSkyOverlay (overlay-macos)",
+            "target": "HireSkyOverlay",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug HireSkyOverlay (overlay-macos)"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:HireSky}/overlay-macos",
+            "name": "Release HireSkyOverlay (overlay-macos)",
+            "target": "HireSkyOverlay",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release HireSkyOverlay (overlay-macos)"
+        }
+    ]
+}
