@@ -4,12 +4,19 @@
         Title="HireSky"
         Width="420" Height="300"
         WindowStyle="None"
-        ResizeMode="NoResize"
+        ResizeMode="CanResize"
         AllowsTransparency="True"
         Background="Transparent"
         Topmost="True"
         ShowInTaskbar="False"
         WindowStartupLocation="Manual">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome GlassFrameThickness="0" 
+                      CornerRadius="0" 
+                      CaptionHeight="0" 
+                      ResizeBorderThickness="6"/>
+    </WindowChrome.WindowChrome>
 
     <!-- Glassmorphism card -->
     <Border CornerRadius="16"
