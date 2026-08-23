@@ -28,6 +28,7 @@ These hotkeys are registered globally on Windows (defined in [SETUP-windows.md](
 
 ### 🎛️ Control & Visibility
 * **`Ctrl + Alt + H`** — **Toggle Overlay Visibility**: Show / Hide the entire HireSky Windows Overlay card.
+* **`Ctrl + Alt + T`** — **Toggle Transcript Visibility**: Show / Hide the running transcript text line at the bottom.
 * **`Ctrl + Alt + Y`** — **Show Dashboard**: Restore settings dashboard window.
 
 ### 🖥️ Screen Analysis & Capture (OCR)

@@ -58,6 +58,7 @@ The output standalone executable will be generated at:
 | Shortcut | Action | Description |
 | :--- | :--- | :--- |
 | **Ctrl + Alt + H** | **Toggle Overlay** | Show / Hide the entire HireSky Windows Overlay card. |
+| **Ctrl + Alt + T** | **Toggle Transcript** | Show / Hide the running transcript text line at the bottom. |
 | **Ctrl + Alt + S** | **Commit & Ask AI** | Locks current transcript segment and submits it to Gemini. |
 | **Ctrl + Alt + D** | **Analyze Screen** | Capture screen & analyze with Gemini AI. |
 | **Ctrl + Alt + F** | **Analyze Screen + Voice** | Combine current screen + live interview voice transcript. |
