@@ -53,15 +53,14 @@ dotnet publish -c Release -r win-x64 --self-contained -p:PublishSingleFile=true 
 The output standalone executable will be generated at:
 `overlay-windows/bin/Release/net8.0-windows/win-x64/publish/HireSkyOverlay.exe`
 
----
-
 ## ⌨️ Windows Global Hotkeys
 
 | Shortcut | Action | Description |
 | :--- | :--- | :--- |
 | **Ctrl + Alt + H** | **Toggle Overlay** | Show / Hide the entire HireSky Windows Overlay card. |
-| **Ctrl + Shift + S** | **Analyze Screen** | Capture screen & analyze with Gemini AI. |
-| **Ctrl + Shift + A** | **Analyze Screen + Voice** | Combine current screen + live interview voice transcript. |
+| **Ctrl + Alt + S** | **Commit & Ask AI** | Locks current transcript segment and submits it to Gemini. |
+| **Ctrl + Alt + D** | **Analyze Screen** | Capture screen & analyze with Gemini AI. |
+| **Ctrl + Alt + F** | **Analyze Screen + Voice** | Combine current screen + live interview voice transcript. |
 | **Ctrl + Alt + Y** | **Show Dashboard** | Restore settings dashboard window. |
 
 ---

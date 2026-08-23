@@ -264,43 +264,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 }
             }
 
-            // --- 1. Screen Only Analysis Shortcuts (Cmd+Shift+\, Cmd+Shift+S, Cmd+Ctrl+S) ---
-            HotKey.register(keyCode: 42 /* \ */, modifiers: [.command, .shift]) { [weak overlays] in
-                overlays?.analyzeScreenOnly()
+            // --- 1. Send Transcript Only (Cmd+Option+S) ---
+            HotKey.register(keyCode: 1 /* s */, modifiers: [.command, .option]) { [weak overlays] in
+                overlays?.finalizeAndAsk()
             }
-            HotKey.register(keyCode: 1 /* s */, modifiers: [.command, .shift]) { [weak overlays] in
-                overlays?.analyzeScreenOnly()
-            }
-            HotKey.register(keyCode: 1 /* s */, modifiers: [.command, .control]) { [weak overlays] in
+
+            // --- 2. Screen Capture Only (Cmd+Option+D) ---
+            HotKey.register(keyCode: 2 /* d */, modifiers: [.command, .option]) { [weak overlays] in
                 overlays?.analyzeScreenOnly()
             }
 
-            // --- 2. Full Screen + Voice Transcript Shortcuts (Cmd+Shift+/, Cmd+Shift+A, Cmd+Ctrl+D, Cmd+/) ---
-            HotKey.register(keyCode: 44 /* / */, modifiers: [.command, .shift]) { [weak overlays] in
+            // --- 3. Full Screen + Voice Transcript (Cmd+Option+F) ---
+            HotKey.register(keyCode: 3 /* f */, modifiers: [.command, .option]) { [weak overlays] in
                 overlays?.analyzeScreen()
-            }
-            HotKey.register(keyCode: 0 /* a */, modifiers: [.command, .shift]) { [weak overlays] in
-                overlays?.analyzeScreen()
-            }
-            HotKey.register(keyCode: 2 /* d */, modifiers: [.command, .control]) { [weak overlays] in
-                overlays?.analyzeScreen()
-            }
-            HotKey.register(keyCode: 44 /* / */, modifiers: [.command]) { [weak overlays] in
-                overlays?.analyzeScreen()
-            }
-
-            // --- 3. Finalize Voice Transcript & Ask AI Shortcuts (Cmd+Shift+], Cmd+Shift+D, Cmd+Ctrl+A, Cmd+] ) ---
-            HotKey.register(keyCode: 30 /* ] */, modifiers: [.command, .shift]) { [weak overlays] in
-                overlays?.finalizeAndAsk()
-            }
-            HotKey.register(keyCode: 2 /* d */, modifiers: [.command, .shift]) { [weak overlays] in
-                overlays?.finalizeAndAsk()
-            }
-            HotKey.register(keyCode: 0 /* a */, modifiers: [.command, .control]) { [weak overlays] in
-                overlays?.finalizeAndAsk()
-            }
-            HotKey.register(keyCode: 30 /* ] */, modifiers: [.command]) { [weak overlays] in
-                overlays?.finalizeAndAsk()
             }
         }
         

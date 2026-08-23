@@ -14,15 +14,12 @@ These hotkeys are registered globally on macOS (defined in [AppDelegate.swift](f
 * **`Cmd + Option + Y`** — **Show Dashboard**: Bring back the main dashboard setup window to adjust prompts and key settings.
 
 ### 🖥️ Screen Analysis & Capture (OCR)
-* **`Cmd + Shift + \`** or **`Cmd + Shift + S`** or **`Cmd + Ctrl + S`**
-  **Analyze Screen Only**: Captures your screen (OCR) and asks Gemini to analyze it (e.g. solve a LeetCode problem or code snippet currently visible) without sending your spoken transcript.
+* **`Cmd + Option + D`** — **Analyze Screen Only**: Captures your screen (OCR) and asks Gemini to analyze it (e.g. solve a LeetCode problem or code snippet currently visible) without sending your spoken transcript.
   
-* **`Cmd + /`** or **`Cmd + Shift + /`** or **`Cmd + Shift + A`** or **`Cmd + Ctrl + D`**
-  **Analyze Screen + Transcript**: Captures your screen (OCR) and sends it along with the live conversation transcript to Gemini for a fully contextual answer.
+* **`Cmd + Option + F`** — **Analyze Screen + Transcript**: Captures your screen (OCR) and sends it along with the live conversation transcript to Gemini for a fully contextual answer.
 
 ### 📝 Transcript Actions
-* **`Cmd + ]`** or **`Cmd + Shift + ]`** or **`Cmd + Shift + D`** or **`Cmd + Ctrl + A`**
-  **Commit & Ask AI**: Locks the current transcript segment, submits it to Gemini for assistance, and starts a fresh transcript bubble underneath.
+* **`Cmd + Option + S`** — **Commit & Ask AI**: Locks the current transcript segment, submits it to Gemini for assistance, and starts a fresh transcript bubble underneath.
 
 ---
 
@@ -34,8 +31,11 @@ These hotkeys are registered globally on Windows (defined in [SETUP-windows.md](
 * **`Ctrl + Alt + Y`** — **Show Dashboard**: Restore settings dashboard window.
 
 ### 🖥️ Screen Analysis & Capture (OCR)
-* **`Ctrl + Shift + S`** — **Analyze Screen**: Capture screen & analyze with Gemini AI.
-* **`Ctrl + Shift + A`** — **Analyze Screen + Voice**: Combine current screen + live interview voice transcript.
+* **`Ctrl + Alt + D`** — **Analyze Screen Only**: Capture screen region OCR and analyze with Gemini AI.
+* **`Ctrl + Alt + F`** — **Analyze Screen + Voice**: Combine current screen + live interview voice transcript.
+
+### 📝 Transcript Actions
+* **`Ctrl + Alt + S`** — **Commit & Ask AI**: Locks the current transcript segment and submits it to Gemini for assistance.
 
 ### 🖱️ Repositioning
 * **Drag anywhere on the card** to reposition the overlay on your screen.

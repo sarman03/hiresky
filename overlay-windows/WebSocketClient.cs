@@ -24,6 +24,7 @@ public sealed class WebSocketClient
 {
     private readonly Uri _url;
     private readonly CancellationTokenSource _cts = new();
+    private ClientWebSocket? _activeWs;
     private static readonly JsonSerializerOptions JsonOpts = new()
     {
         PropertyNameCaseInsensitive = true
@@ -47,6 +48,7 @@ public sealed class WebSocketClient
             try
             {
                 await ws.ConnectAsync(_url, ct);
+                _activeWs = ws;
                 ConnectionChanged?.Invoke(true);
                 delay = TimeSpan.FromSeconds(1); // reset backoff
                 _ = PingLoopAsync(ws, ct);
@@ -59,6 +61,10 @@ public sealed class WebSocketClient
             catch
             {
                 // fall through to reconnect
+            }
+            finally
+            {
+                _activeWs = null;
             }
 
             ConnectionChanged?.Invoke(false);
@@ -117,6 +123,26 @@ public sealed class WebSocketClient
             catch
             {
                 return;
+            }
+        }
+    }
+
+    public async Task SendCommandAsync(string action, string? text = null)
+    {
+        var ws = _activeWs;
+        if (ws != null && ws.State == WebSocketState.Open)
+        {
+            try
+            {
+                var msg = new { type = "cmd", action = action, text = text };
+                var json = JsonSerializer.Serialize(msg);
+                var bytes = Encoding.UTF8.GetBytes(json);
+                await ws.SendAsync(new ArraySegment<byte>(bytes),
+                    WebSocketMessageType.Text, true, CancellationToken.None);
+            }
+            catch
+            {
+                // ignore write errors
             }
         }
     }

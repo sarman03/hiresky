@@ -13,6 +13,9 @@ public partial class MainWindow : Window
     private WebSocketClient? _client;
     private string _answer = "";
     private const int HotkeyId = 0xB001;
+    private const int HotkeySendTranscriptId = 0xB002;
+    private const int HotkeyScreenCaptureId = 0xB003;
+    private const int HotkeyScreenVoiceId = 0xB004;
     private HwndSource? _source;
     private bool _hiddenByHotkey;
     
@@ -53,6 +56,17 @@ public partial class MainWindow : Window
             NativeMethods.MOD_CONTROL | NativeMethods.MOD_ALT | NativeMethods.MOD_NOREPEAT,
             0x48 /* VK_H */);
 
+        // Command Hotkeys: Ctrl+Alt+S (Send Transcript), Ctrl+Alt+D (Screen Capture), Ctrl+Alt+F (Screen + Voice)
+        NativeMethods.RegisterHotKey(hwnd, HotkeySendTranscriptId,
+            NativeMethods.MOD_CONTROL | NativeMethods.MOD_ALT | NativeMethods.MOD_NOREPEAT,
+            0x53 /* VK_S */);
+        NativeMethods.RegisterHotKey(hwnd, HotkeyScreenCaptureId,
+            NativeMethods.MOD_CONTROL | NativeMethods.MOD_ALT | NativeMethods.MOD_NOREPEAT,
+            0x44 /* VK_D */);
+        NativeMethods.RegisterHotKey(hwnd, HotkeyScreenVoiceId,
+            NativeMethods.MOD_CONTROL | NativeMethods.MOD_ALT | NativeMethods.MOD_NOREPEAT,
+            0x46 /* VK_F */);
+
         // Initialize Database and Session
         try {
             _dbService = new DatabaseService();
@@ -71,11 +85,30 @@ public partial class MainWindow : Window
 
     private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
     {
-        if (msg == NativeMethods.WM_HOTKEY && wParam.ToInt32() == HotkeyId)
+        if (msg == NativeMethods.WM_HOTKEY)
         {
-            _hiddenByHotkey = !_hiddenByHotkey;
-            Visibility = _hiddenByHotkey ? Visibility.Hidden : Visibility.Visible;
-            handled = true;
+            int id = wParam.ToInt32();
+            if (id == HotkeyId)
+            {
+                _hiddenByHotkey = !_hiddenByHotkey;
+                Visibility = _hiddenByHotkey ? Visibility.Hidden : Visibility.Visible;
+                handled = true;
+            }
+            else if (id == HotkeySendTranscriptId)
+            {
+                _ = _client?.SendCommandAsync("assist");
+                handled = true;
+            }
+            else if (id == HotkeyScreenCaptureId)
+            {
+                _ = _client?.SendCommandAsync("analyze_screen");
+                handled = true;
+            }
+            else if (id == HotkeyScreenVoiceId)
+            {
+                _ = _client?.SendCommandAsync("analyze_screen"); // python backend maps screen + voice into same analyze_screen logic if transcript is rolling
+                handled = true;
+            }
         }
         return IntPtr.Zero;
     }
@@ -142,6 +175,9 @@ public partial class MainWindow : Window
     {
         var hwnd = new WindowInteropHelper(this).Handle;
         NativeMethods.UnregisterHotKey(hwnd, HotkeyId);
+        NativeMethods.UnregisterHotKey(hwnd, HotkeySendTranscriptId);
+        NativeMethods.UnregisterHotKey(hwnd, HotkeyScreenCaptureId);
+        NativeMethods.UnregisterHotKey(hwnd, HotkeyScreenVoiceId);
         _source?.RemoveHook(WndProc);
         _client?.Stop();
     }
