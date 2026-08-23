@@ -63,6 +63,10 @@ final class OverlayController {
                 self.onCommand?("summarize_last_answer", nil)
             }
         }
+        
+        content.onCloseTranscript = { [weak self] in
+            self?.toggleTranscript()
+        }
     }
 
     func showAll() {

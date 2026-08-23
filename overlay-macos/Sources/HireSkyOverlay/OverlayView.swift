@@ -634,6 +634,7 @@ final class AnswerCardView: NSView {
 // MARK: - Transcript panel (right)
 
 final class TranscriptView: NSView {
+    var onClose: (() -> Void)?
     private let glass = makeGlass(cornerRadius: 24)
     private let scroll = NSScrollView()
     private let doc = FlippedView()
@@ -655,6 +656,10 @@ final class TranscriptView: NSView {
     }
     required init?(coder: NSCoder) { fatalError() }
 
+    @objc private func closeTapped() {
+        onClose?()
+    }
+
     private func build() {
         addSubview(glass)
         NSLayoutConstraint.activate([
@@ -668,6 +673,17 @@ final class TranscriptView: NSView {
         caption.font = .systemFont(ofSize: 10, weight: .bold)
         caption.textColor = NSColor(white: 0.6, alpha: 1)
         caption.translatesAutoresizingMaskIntoConstraints = false
+
+        let closeButton = NSButton()
+        closeButton.translatesAutoresizingMaskIntoConstraints = false
+        closeButton.isBordered = false
+        closeButton.bezelStyle = .regularSquare
+        closeButton.imagePosition = .imageOnly
+        closeButton.contentTintColor = NSColor(white: 1, alpha: 0.5)
+        closeButton.image = NSImage(systemSymbolName: "minus", accessibilityDescription: "Minimize")?
+            .withSymbolConfiguration(NSImage.SymbolConfiguration(pointSize: 10, weight: .bold))
+        closeButton.target = self
+        closeButton.action = #selector(closeTapped)
 
         stack.orientation = .vertical
         stack.alignment = .width
@@ -683,11 +699,17 @@ final class TranscriptView: NSView {
         scroll.borderType = .noBorder
         scroll.documentView = doc
         glass.addSubview(caption)
+        glass.addSubview(closeButton)
         glass.addSubview(scroll)
 
         NSLayoutConstraint.activate([
             caption.leadingAnchor.constraint(equalTo: glass.leadingAnchor, constant: 14),
             caption.topAnchor.constraint(equalTo: glass.topAnchor, constant: 16),
+
+            closeButton.trailingAnchor.constraint(equalTo: glass.trailingAnchor, constant: -14),
+            closeButton.centerYAnchor.constraint(equalTo: caption.centerYAnchor),
+            closeButton.widthAnchor.constraint(equalToConstant: 16),
+            closeButton.heightAnchor.constraint(equalToConstant: 16),
 
             scroll.leadingAnchor.constraint(equalTo: glass.leadingAnchor, constant: 10),
             scroll.trailingAnchor.constraint(equalTo: glass.trailingAnchor, constant: -10),
@@ -799,6 +821,7 @@ final class ContentRootView: NSView {
     let resizeBorder = ResizeBorderView(frame: .zero)
 
     var transcriptShown = false { didSet { needsLayout = true } }
+    var onCloseTranscript: (() -> Void)?
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -807,6 +830,10 @@ final class ContentRootView: NSView {
         addSubview(transcriptView)
         addSubview(resizeBorder)     // topmost: grabs edges, passes interior through
         transcriptView.isHidden = true
+        
+        transcriptView.onClose = { [weak self] in
+            self?.onCloseTranscript?()
+        }
     }
     required init?(coder: NSCoder) { fatalError() }
 
