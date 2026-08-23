@@ -19,6 +19,26 @@
             "target": "HireSkyOverlay",
             "configuration": "release",
             "preLaunchTask": "swift: Build Release HireSkyOverlay (overlay-macos)"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:HireSky}/overlay-macos",
+            "name": "Debug SystemAudioBridge (overlay-macos)",
+            "target": "SystemAudioBridge",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug SystemAudioBridge (overlay-macos)"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:HireSky}/overlay-macos",
+            "name": "Release SystemAudioBridge (overlay-macos)",
+            "target": "SystemAudioBridge",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release SystemAudioBridge (overlay-macos)"
         }
     ]
 }

@@ -2,13 +2,13 @@
 import PackageDescription
 
 let package = Package(
-    name: "HireSkyOverlay",
+    name: "SystemAudioBridge",
     platforms: [
         .macOS(.v13)
     ],
     targets: [
         .executableTarget(
-            name: "HireSkyOverlay",
+            name: "SystemAudioBridge",
             path: "Sources/HireSkyOverlay",
             resources: [
                 .process("Resources")

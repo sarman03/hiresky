@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <AssemblyName>HireSkyOverlay</AssemblyName>
+    <AssemblyName>SystemAudioBridge</AssemblyName>
     <RootNamespace>HireSky</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
