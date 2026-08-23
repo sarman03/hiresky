@@ -16,6 +16,7 @@ public partial class MainWindow : Window
     private const int HotkeySendTranscriptId = 0xB002;
     private const int HotkeyScreenCaptureId = 0xB003;
     private const int HotkeyScreenVoiceId = 0xB004;
+    private const int HotkeyToggleTranscriptId = 0xB005;
     private HwndSource? _source;
     private bool _hiddenByHotkey;
     
@@ -66,6 +67,9 @@ public partial class MainWindow : Window
         NativeMethods.RegisterHotKey(hwnd, HotkeyScreenVoiceId,
             NativeMethods.MOD_CONTROL | NativeMethods.MOD_ALT | NativeMethods.MOD_NOREPEAT,
             0x46 /* VK_F */);
+        NativeMethods.RegisterHotKey(hwnd, HotkeyToggleTranscriptId,
+            NativeMethods.MOD_CONTROL | NativeMethods.MOD_ALT | NativeMethods.MOD_NOREPEAT,
+            0x54 /* VK_T */);
 
         // Initialize Database and Session
         try {
@@ -109,8 +113,32 @@ public partial class MainWindow : Window
                 _ = _client?.SendCommandAsync("analyze_screen"); // python backend maps screen + voice into same analyze_screen logic if transcript is rolling
                 handled = true;
             }
+            else if (id == HotkeyToggleTranscriptId)
+            {
+                ToggleTranscript();
+                handled = true;
+            }
         }
         return IntPtr.Zero;
+    }
+
+    private void ToggleTranscript_Click(object sender, MouseButtonEventArgs e)
+    {
+        ToggleTranscript();
+    }
+
+    private void ToggleTranscript()
+    {
+        if (TranscriptText.Visibility == Visibility.Visible)
+        {
+            TranscriptText.Visibility = Visibility.Collapsed;
+            ToggleTranscriptBtn.Text = "➕";
+        }
+        else
+        {
+            TranscriptText.Visibility = Visibility.Visible;
+            ToggleTranscriptBtn.Text = "➖";
+        }
     }
 
     private void OnConnectionChanged(bool connected)
@@ -178,6 +206,7 @@ public partial class MainWindow : Window
         NativeMethods.UnregisterHotKey(hwnd, HotkeySendTranscriptId);
         NativeMethods.UnregisterHotKey(hwnd, HotkeyScreenCaptureId);
         NativeMethods.UnregisterHotKey(hwnd, HotkeyScreenVoiceId);
+        NativeMethods.UnregisterHotKey(hwnd, HotkeyToggleTranscriptId);
         _source?.RemoveHook(WndProc);
         _client?.Stop();
     }

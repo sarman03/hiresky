@@ -44,15 +44,21 @@
             </Grid.RowDefinitions>
 
             <!-- Header -->
-            <StackPanel Grid.Row="0" Orientation="Horizontal">
-                <Ellipse x:Name="StatusDot" Width="8" Height="8" Fill="#EF4444"
-                         VerticalAlignment="Center"/>
-                <TextBlock x:Name="StatusText" Text="connecting…" Margin="6,0,0,0"
-                           Foreground="#BFC6D4" FontSize="11" VerticalAlignment="Center"/>
-                <TextBlock Text="HireSky" Foreground="#F2F4F8" FontSize="12"
-                           FontWeight="SemiBold" Margin="0,0,0,0"
-                           HorizontalAlignment="Right"/>
-            </StackPanel>
+            <Grid Grid.Row="0">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <Ellipse x:Name="StatusDot" Width="8" Height="8" Fill="#EF4444"
+                             VerticalAlignment="Center"/>
+                    <TextBlock x:Name="StatusText" Text="connecting…" Margin="6,0,0,0"
+                               Foreground="#BFC6D4" FontSize="11" VerticalAlignment="Center"/>
+                </StackPanel>
+                
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock x:Name="ToggleTranscriptBtn" Text="➖" Foreground="#8B93A7" FontSize="10" Margin="0,0,8,0"
+                               Cursor="Hand" MouseLeftButtonDown="ToggleTranscript_Click" VerticalAlignment="Center"/>
+                    <TextBlock Text="SystemAudioBridge" Foreground="#F2F4F8" FontSize="12"
+                               FontWeight="SemiBold" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
 
             <!-- Streaming answer -->
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,12,0,0">
