@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Logo from "./Logo";
 
 export default function Footer() {
   return (
@@ -6,7 +7,7 @@ export default function Footer() {
       <div className="mx-auto flex max-w-6xl flex-col gap-10 md:flex-row md:items-start md:justify-between">
         <div className="max-w-xs">
           <Link href="/" className="flex items-center gap-2.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-signal shadow-[0_0_0_3px_rgba(240,169,62,0.18)]" />
+            <Logo />
             <span className="font-display text-xl text-text">HireSky</span>
           </Link>
           <p className="mt-4 text-sm text-text-dim">

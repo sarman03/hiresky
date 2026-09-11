@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import Logo from "./Logo";
 
 const links = [
   { href: "/#how-it-works", label: "How it works" },
@@ -18,7 +19,7 @@ export default function Navbar() {
     <header className="glass sticky top-0 z-50 border-x-0 border-t-0">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 sm:px-8">
         <Link href="/" className="flex items-center gap-2.5">
-          <span className="relative h-2.5 w-2.5 rounded-full bg-signal shadow-[0_0_0_3px_rgba(240,169,62,0.18)]" />
+          <Logo />
           <span className="font-display text-xl text-text">HireSky</span>
         </Link>
 
