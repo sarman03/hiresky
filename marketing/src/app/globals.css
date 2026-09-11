@@ -1,0 +1,150 @@
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap");
+@import "tailwindcss";
+
+/* Light is the default palette — it's what renders with no data-theme
+   attribute at all (no-JS, or before the toggle script runs). Dark is an
+   override below, applied only when data-theme="dark" is set. */
+@theme {
+  --color-ink: #faf6ec;
+  --color-ink-2: #f1ead8;
+  --color-ink-3: #e8dfc8;
+  --color-line: rgba(23, 20, 15, 0.1);
+  --color-line-strong: rgba(23, 20, 15, 0.18);
+  --color-text: #17140f;
+  --color-text-dim: #5b5546;
+  --color-text-faint: #8c8571;
+  --color-signal: #c97e1d;
+  --color-signal-dim: #9c6f2c;
+  --color-signal-ink: #1a1206;
+  --color-ghost: #6b7180;
+  --color-danger: #c1432a;
+
+  --font-display: "Instrument Serif", "Iowan Old Style", serif;
+  --font-body: "Hanken Grotesk", "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", "SF Mono", monospace;
+}
+
+:root {
+  --line-strong: rgba(23, 20, 15, 0.18);
+  --signal: #c97e1d;
+}
+
+:root[data-theme="dark"] {
+  --color-ink: #100e0b;
+  --color-ink-2: #17140f;
+  --color-ink-3: #211c14;
+  --color-line: rgba(241, 235, 220, 0.1);
+  --color-line-strong: rgba(241, 235, 220, 0.18);
+  --color-text: #f1ebdc;
+  --color-text-dim: #a39c8b;
+  --color-text-faint: #746e5c;
+  --color-signal: #f0a93e;
+  --color-signal-dim: #9c6f2c;
+  --color-danger: #e2664a;
+
+  --line-strong: rgba(241, 235, 220, 0.18);
+  --signal: #f0a93e;
+}
+
+/* Fixed-dark scope: for the panels that are actually glimpses of the
+   product's own (always-dark) overlay UI — the hero laptop demo, and
+   text overlaid directly on the moody product photography. These stay
+   dark regardless of the site's light/dark toggle, the same way a
+   product screenshot on a marketing page doesn't re-theme with it. */
+.dark-scope {
+  --color-ink: #100e0b;
+  --color-ink-2: #17140f;
+  --color-ink-3: #211c14;
+  --color-line: rgba(241, 235, 220, 0.1);
+  --color-line-strong: rgba(241, 235, 220, 0.18);
+  --color-text: #f1ebdc;
+  --color-text-dim: #a39c8b;
+  --color-text-faint: #746e5c;
+  --color-signal: #f0a93e;
+  --color-signal-dim: #9c6f2c;
+  --color-danger: #e2664a;
+
+  --line-strong: rgba(241, 235, 220, 0.18);
+  --signal: #f0a93e;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+body {
+  line-height: 1.55;
+  overflow-x: hidden;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* Glass: the site's one recurring texture, tying back to the overlay's
+   own translucent HUD. Always warm-tinted (never neutral white/grey glass)
+   and always paired with a hairline border, never used decoratively on
+   its own. */
+.glass {
+  background: linear-gradient(
+    165deg,
+    rgba(241, 235, 220, 0.08),
+    rgba(241, 235, 220, 0.02)
+  );
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid var(--line-strong);
+}
+
+.glass-signal {
+  background: linear-gradient(
+    165deg,
+    rgba(240, 169, 62, 0.14),
+    rgba(240, 169, 62, 0.03)
+  );
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(240, 169, 62, 0.3);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reveal {
+  opacity: 0;
+  animation: reveal 0.7s ease forwards;
+}
