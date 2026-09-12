@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { prisma } from "../index";
+import { authenticate } from "../middleware/auth.middleware";
+import { stripe, WEB_APP_URL } from "../lib/stripe";
 
 const router = Router();
 
@@ -16,45 +18,40 @@ router.get("/plans", async (req, res) => {
   }
 });
 
-// Mock checkout success endpoint (Phase 1)
-router.post("/checkout/success", async (req, res) => {
+// Create a Stripe Checkout Session for a plan. The subscription/entitlement
+// is only ever granted from the signed `checkout.session.completed` webhook
+// (see billing.webhook.ts) — never from this endpoint directly — so a client
+// can't self-grant a plan without actually paying.
+router.post("/checkout/create-session", authenticate, async (req, res) => {
   try {
-    const { userId, planId } = req.body;
-    
+    if (!stripe) {
+      return res.status(503).json({ error: "Stripe is not configured on the server" });
+    }
+
+    const userId = req.user!.userId;
+    const { planId } = req.body;
+
     const plan = await prisma.plan.findUnique({ where: { id: planId } });
     if (!plan) return res.status(404).json({ error: "Plan not found" });
 
-    // Calculate expiry
-    const startsAt = new Date();
-    const expiresAt = plan.durationHours 
-      ? new Date(startsAt.getTime() + plan.durationHours * 60 * 60 * 1000)
-      : new Date(startsAt.getTime() + 30 * 24 * 60 * 60 * 1000); // Default to 30 days if no durationHours
-
-    // Create subscription
-    const subscription = await prisma.subscription.create({
-      data: {
-        userId,
-        planId,
-        status: "active",
-        startedAt: startsAt,
-        expiresAt: expiresAt,
-        provider: "mock"
-      }
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      line_items: [
+        {
+          price_data: {
+            currency: plan.currency.toLowerCase(),
+            product_data: { name: plan.name },
+            unit_amount: Math.round(Number(plan.price) * 100)
+          },
+          quantity: 1
+        }
+      ],
+      metadata: { userId, planId: plan.id },
+      success_url: `${WEB_APP_URL}/pricing?checkout=success`,
+      cancel_url: `${WEB_APP_URL}/pricing?checkout=cancelled`
     });
 
-    // Create entitlement based on plan domain
-    await prisma.userEntitlement.create({
-      data: {
-        userId,
-        subscriptionId: subscription.id,
-        featureKey: plan.domain,
-        enabled: true,
-        startsAt,
-        expiresAt
-      }
-    });
-
-    res.json({ success: true, subscription });
+    res.json({ url: session.url });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
