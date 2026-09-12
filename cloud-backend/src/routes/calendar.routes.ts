@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { prisma } from "../index";
+import { requireSelf } from "../middleware/auth.middleware";
 
 const router = Router();
 
 // Get calendar events
-router.get("/:userId", async (req, res) => {
+router.get("/:userId", requireSelf(), async (req, res) => {
   try {
     const { userId } = req.params;
     const events = await prisma.calendarEvent.findMany({
@@ -19,7 +20,7 @@ router.get("/:userId", async (req, res) => {
 });
 
 // Create calendar event
-router.post("/:userId", async (req, res) => {
+router.post("/:userId", requireSelf(), async (req, res) => {
   try {
     const { userId } = req.params;
     const { title, company, role, domain, startTime, endTime, meetingUrl, notes } = req.body;

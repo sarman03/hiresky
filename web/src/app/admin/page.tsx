@@ -16,21 +16,32 @@ export default function AdminPage() {
     const token = localStorage.getItem("token");
     if (!token) { router.push("/login"); return; }
 
-    fetch("http://localhost:4000/api/admin/stats").then(r => r.json()).then(setStats);
-    fetch("http://localhost:4000/api/admin/users").then(r => r.json()).then(d => { if (Array.isArray(d)) setUsers(d); });
-    fetch("http://localhost:4000/api/admin/logs").then(r => r.json()).then(d => { if (Array.isArray(d)) setLogs(d); });
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      if (payload.role !== "ADMIN") { router.push("/"); return; }
+    } catch {
+      router.push("/login");
+      return;
+    }
+
+    const authHeader = { "Authorization": `Bearer ${token}` };
+    fetch("http://localhost:4000/api/admin/stats", { headers: authHeader }).then(r => r.json()).then(setStats);
+    fetch("http://localhost:4000/api/admin/users", { headers: authHeader }).then(r => r.json()).then(d => { if (Array.isArray(d)) setUsers(d); });
+    fetch("http://localhost:4000/api/admin/logs", { headers: authHeader }).then(r => r.json()).then(d => { if (Array.isArray(d)) setLogs(d); });
   }, [router]);
 
   const handleBan = async (userId: string) => {
     setBanning(userId);
+    const token = localStorage.getItem("token");
+    const authHeader = { "Content-Type": "application/json", "Authorization": `Bearer ${token}` };
     await fetch(`http://localhost:4000/api/admin/users/${userId}/ban`, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ adminId: userId, reason: "Admin action" })
+      headers: authHeader,
+      body: JSON.stringify({ reason: "Admin action" })
     });
-    const updated = await fetch("http://localhost:4000/api/admin/users").then(r => r.json());
+    const updated = await fetch("http://localhost:4000/api/admin/users", { headers: authHeader }).then(r => r.json());
     if (Array.isArray(updated)) setUsers(updated);
-    const updatedLogs = await fetch("http://localhost:4000/api/admin/logs").then(r => r.json());
+    const updatedLogs = await fetch("http://localhost:4000/api/admin/logs", { headers: authHeader }).then(r => r.json());
     if (Array.isArray(updatedLogs)) setLogs(updatedLogs);
     setBanning(null);
   };
@@ -60,7 +71,7 @@ export default function AdminPage() {
             { label: "Sessions Today", value: stats?.sessionsToday ?? "—", icon: "🎙️" },
             { label: "Total Sessions", value: stats?.totalSessions ?? "—", icon: "📋" },
             { label: "Active Subs", value: stats?.activeSubscriptions ?? "—", icon: "✅" },
-            { label: "MRR", value: stats?.mrr != null ? `$${stats.mrr}` : "—", icon: "💰" },
+            { label: "MRR", value: stats?.mrr != null ? `₹${stats.mrr}` : "—", icon: "💰" },
           ].map(s => (
             <div key={s.label} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 shadow-lg">
               <div className="text-2xl mb-1">{s.icon}</div>

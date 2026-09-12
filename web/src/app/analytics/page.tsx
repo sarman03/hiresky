@@ -16,7 +16,9 @@ export default function AnalyticsPage() {
     
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
-      fetch(`http://localhost:4000/api/analytics/${payload.userId}`)
+      fetch(`http://localhost:4000/api/analytics/${payload.userId}`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      })
       .then(res => res.json())
       .then(data => {
         if (data && !data.error) setMetrics(data);

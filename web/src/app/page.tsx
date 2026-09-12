@@ -40,7 +40,9 @@ export default function Dashboard() {
       .catch(e => console.error("Error fetching sessions:", e));
 
     // Fetch unread notification count
-    fetch(`http://localhost:4000/api/notifications/${userId}`)
+    fetch(`http://localhost:4000/api/notifications/${userId}`, {
+      headers: { "Authorization": `Bearer ${token}` }
+    })
       .then(r => r.json())
       .then(data => {
         if (Array.isArray(data)) setUnreadCount(data.filter((n: any) => !n.isRead).length);

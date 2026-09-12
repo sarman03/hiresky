@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { prisma } from "../index";
+import { requireSelf } from "../middleware/auth.middleware";
 
 const router = Router();
 
 // Get all notifications for user (most recent first)
-router.get("/:userId", async (req, res) => {
+router.get("/:userId", requireSelf(), async (req, res) => {
   try {
     const { userId } = req.params;
 
@@ -68,6 +69,13 @@ router.get("/:userId", async (req, res) => {
 router.patch("/:notificationId/read", async (req, res) => {
   try {
     const { notificationId } = req.params;
+
+    const existing = await prisma.notification.findUnique({ where: { id: notificationId } });
+    if (!existing) return res.status(404).json({ error: "Notification not found" });
+    if (existing.userId !== req.user!.userId && req.user!.role !== "ADMIN") {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+
     const notification = await prisma.notification.update({
       where: { id: notificationId },
       data: { isRead: true }
@@ -80,7 +88,7 @@ router.patch("/:notificationId/read", async (req, res) => {
 });
 
 // Mark all as read for a user
-router.patch("/:userId/read-all", async (req, res) => {
+router.patch("/:userId/read-all", requireSelf(), async (req, res) => {
   try {
     const { userId } = req.params;
     await prisma.notification.updateMany({

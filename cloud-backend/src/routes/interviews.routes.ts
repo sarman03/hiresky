@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { prisma } from "../index";
+import { requireSelf } from "../middleware/auth.middleware";
 
 const router = Router();
 
 // Get interview history for a user
-router.get("/user/:userId", async (req, res) => {
+router.get("/user/:userId", requireSelf(), async (req, res) => {
   try {
     const { userId } = req.params;
     const sessions = await prisma.interviewSession.findMany({
@@ -22,8 +23,9 @@ router.get("/user/:userId", async (req, res) => {
 // Create a new session (called from macOS app when starting interview)
 router.post("/start", async (req, res) => {
   try {
-    const { userId, domain, title, companyName, jobTitle } = req.body;
-    
+    const userId = req.user!.userId;
+    const { domain, title, companyName, jobTitle } = req.body;
+
     // Check entitlement before starting
     const entitlement = await prisma.userEntitlement.findFirst({
       where: {
@@ -78,6 +80,12 @@ router.post("/:sessionId/complete", async (req, res) => {
     const { sessionId } = req.params;
     const { summaryData, transcripts } = req.body; // Sent from macOS local python daemon
 
+    const existing = await prisma.interviewSession.findUnique({ where: { id: sessionId } });
+    if (!existing) return res.status(404).json({ error: "Session not found" });
+    if (existing.userId !== req.user!.userId && req.user!.role !== "ADMIN") {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+
     await prisma.interviewSession.update({
       where: { id: sessionId },
       data: { status: "completed", endedAt: new Date() }
@@ -125,6 +133,9 @@ router.get("/:sessionId/stats", async (req, res) => {
 
     if (!session) {
       return res.status(404).json({ error: "Session not found" });
+    }
+    if (session.userId !== req.user!.userId && req.user!.role !== "ADMIN") {
+      return res.status(403).json({ error: "Forbidden" });
     }
 
     res.json(session);

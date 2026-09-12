@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { prisma } from "../index";
+import { requireSelf } from "../middleware/auth.middleware";
 
 const router = Router();
 
 // Get context for user
-router.get("/:userId", async (req, res) => {
+router.get("/:userId", requireSelf(), async (req, res) => {
   try {
     const { userId } = req.params;
     let context = await prisma.userContext.findUnique({
@@ -25,7 +26,7 @@ router.get("/:userId", async (req, res) => {
 });
 
 // Update context
-router.put("/:userId", async (req, res) => {
+router.put("/:userId", requireSelf(), async (req, res) => {
   try {
     const { userId } = req.params;
     const { targetRole, targetCompanies, preferredAnswerStyle, technicalStack } = req.body;

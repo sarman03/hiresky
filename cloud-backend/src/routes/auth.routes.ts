@@ -2,9 +2,9 @@ import { Router } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { prisma } from "../index";
+import { JWT_SECRET } from "../lib/jwt";
 
 const router = Router();
-const JWT_SECRET = process.env.JWT_SECRET || "supersecretkey_phase1";
 
 // Signup
 router.post("/signup", async (req, res) => {
@@ -31,8 +31,8 @@ router.post("/signup", async (req, res) => {
       include: { profile: true }
     });
 
-    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "15m" });
-    const refreshToken = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "30d" });
+    const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET!, { expiresIn: "15m" });
+    const refreshToken = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET!, { expiresIn: "30d" });
 
     res.json({ token, refreshToken, user: { id: user.id, email: user.email, profile: user.profile } });
   } catch (error) {
@@ -65,8 +65,8 @@ router.post("/login", async (req, res) => {
       data: { lastLoginAt: new Date() }
     });
 
-    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "15m" });
-    const refreshToken = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "30d" });
+    const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET!, { expiresIn: "15m" });
+    const refreshToken = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET!, { expiresIn: "30d" });
 
     res.json({ token, refreshToken, user: { id: user.id, email: user.email, profile: user.profile, entitlements: user.entitlements } });
   } catch (error) {

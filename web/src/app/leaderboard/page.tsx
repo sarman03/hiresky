@@ -18,7 +18,10 @@ export default function LeaderboardPage() {
   }, [router, epoch]);
 
   const fetchLeaderboard = (selectedEpoch: string) => {
-    fetch(`http://localhost:4000/api/leaderboard/${selectedEpoch}`)
+    const token = localStorage.getItem("token");
+    fetch(`http://localhost:4000/api/leaderboard/${selectedEpoch}`, {
+      headers: { "Authorization": `Bearer ${token}` }
+    })
       .then(res => res.json())
       .then(data => {
         if (data && data.entries) {

@@ -8,7 +8,10 @@ router.get("/stats", async (req, res) => {
   try {
     const totalUsers = await prisma.user.count();
     const totalSessions = await prisma.interviewSession.count();
-    const activeSubs = await prisma.subscription.count({ where: { status: "active" } });
+    const activeSubscriptions = await prisma.subscription.findMany({
+      where: { status: "active" },
+      include: { plan: true }
+    });
 
     // Sessions created today
     const todayStart = new Date();
@@ -17,13 +20,14 @@ router.get("/stats", async (req, res) => {
       where: { createdAt: { gte: todayStart } }
     });
 
+    const mrr = activeSubscriptions.reduce((sum, sub) => sum + Number(sub.plan.price), 0);
+
     res.json({
       totalUsers,
       totalSessions,
       sessionsToday,
-      activeSubscriptions: activeSubs,
-      // Mock MRR for prototype
-      mrr: activeSubs * 29
+      activeSubscriptions: activeSubscriptions.length,
+      mrr
     });
   } catch (error) {
     console.error(error);
@@ -53,7 +57,8 @@ router.get("/users", async (req, res) => {
 router.patch("/users/:id/ban", async (req, res) => {
   try {
     const { id } = req.params;
-    const { adminId, reason } = req.body;
+    const { reason } = req.body;
+    const adminId = req.user!.userId;
 
     const user = await prisma.user.findUnique({ where: { id } });
     if (!user) return res.status(404).json({ error: "User not found" });
@@ -64,7 +69,7 @@ router.patch("/users/:id/ban", async (req, res) => {
       prisma.user.update({ where: { id }, data: { status: newStatus } }),
       prisma.adminLog.create({
         data: {
-          adminId: adminId || id,
+          adminId,
           action: newStatus === "SUSPENDED" ? "BAN_USER" : "UNBAN_USER",
           targetId: id,
           details: reason || "No reason provided"

@@ -13,7 +13,9 @@ export default function ReferralsPage() {
     if (!token) { router.push("/login"); return; }
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
-      fetch(`http://localhost:4000/api/referrals/${payload.userId}`)
+      fetch(`http://localhost:4000/api/referrals/${payload.userId}`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      })
         .then(r => r.json())
         .then(d => { if (!d.error) setData(d); });
     } catch { router.push("/login"); }

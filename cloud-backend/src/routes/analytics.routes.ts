@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { prisma } from "../index";
+import { requireSelf } from "../middleware/auth.middleware";
 
 const router = Router();
 
 // Get analytics for user
-router.get("/:userId", async (req, res) => {
+router.get("/:userId", requireSelf(), async (req, res) => {
   try {
     const { userId } = req.params;
     

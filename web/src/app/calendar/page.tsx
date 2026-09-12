@@ -28,7 +28,10 @@ export default function CalendarPage() {
   }, [router]);
 
   const fetchEvents = (uid: string) => {
-    fetch(`http://localhost:4000/api/calendar/${uid}`)
+    const token = localStorage.getItem("token");
+    fetch(`http://localhost:4000/api/calendar/${uid}`, {
+      headers: { "Authorization": `Bearer ${token}` }
+    })
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) setEvents(data);
@@ -38,9 +41,10 @@ export default function CalendarPage() {
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      const token = localStorage.getItem("token");
       const res = await fetch(`http://localhost:4000/api/calendar/${userId}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
         body: JSON.stringify(newEvent)
       });
       if (res.ok) {
@@ -75,7 +79,6 @@ export default function CalendarPage() {
             <input type="text" placeholder="Role" className="rounded bg-zinc-800 p-3 border border-zinc-700 outline-none" value={newEvent.role} onChange={e => setNewEvent({...newEvent, role: e.target.value})} />
             <select className="rounded bg-zinc-800 p-3 border border-zinc-700 outline-none" value={newEvent.domain} onChange={e => setNewEvent({...newEvent, domain: e.target.value})}>
               <option value="TECHNICAL">Technical</option>
-              <option value="HR">HR / Behavioral</option>
               <option value="CODING">Coding</option>
             </select>
             <input type="datetime-local" required className="rounded bg-zinc-800 p-3 border border-zinc-700 outline-none" value={newEvent.startTime} onChange={e => setNewEvent({...newEvent, startTime: e.target.value})} />

@@ -29,7 +29,9 @@ export default function NotificationsPage() {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       setUserId(payload.userId);
-      fetch(`http://localhost:4000/api/notifications/${payload.userId}`)
+      fetch(`http://localhost:4000/api/notifications/${payload.userId}`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      })
         .then(r => r.json())
         .then(data => {
           if (Array.isArray(data)) setNotifications(data);
@@ -40,13 +42,15 @@ export default function NotificationsPage() {
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
+  const authHeader = () => ({ "Authorization": `Bearer ${localStorage.getItem("token")}` });
+
   const markAllRead = async () => {
-    await fetch(`http://localhost:4000/api/notifications/${userId}/read-all`, { method: "PATCH" });
+    await fetch(`http://localhost:4000/api/notifications/${userId}/read-all`, { method: "PATCH", headers: authHeader() });
     setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
   };
 
   const markRead = async (id: string) => {
-    await fetch(`http://localhost:4000/api/notifications/${id}/read`, { method: "PATCH" });
+    await fetch(`http://localhost:4000/api/notifications/${id}/read`, { method: "PATCH", headers: authHeader() });
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
   };
 

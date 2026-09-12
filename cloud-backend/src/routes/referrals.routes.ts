@@ -1,11 +1,12 @@
 import { Router } from "express";
 import { prisma } from "../index";
 import { randomBytes } from "crypto";
+import { requireSelf } from "../middleware/auth.middleware";
 
 const router = Router();
 
 // Get referral code + stats for user
-router.get("/:userId", async (req, res) => {
+router.get("/:userId", requireSelf(), async (req, res) => {
   try {
     const { userId } = req.params;
 

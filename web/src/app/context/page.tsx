@@ -41,9 +41,10 @@ export default function ContextPage() {
     e.preventDefault();
     setSaving(true);
     try {
+      const token = localStorage.getItem("token");
       const res = await fetch(`http://localhost:4000/api/context/${userId}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
         body: JSON.stringify(context)
       });
       if (res.ok) {
