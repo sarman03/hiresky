@@ -93,7 +93,22 @@ class Orchestrator:
 
     def _on_command(self, action: str, data: dict | None = None) -> None:
         """Handle a control command sent by an overlay over the WebSocket."""
-        if action == "toggle_listening":
+        if action == "configure":
+            # Lets an overlay push the system prompt / candidate info at
+            # session start, as documented in config.example.yaml. Without
+            # this handler nothing could ever set these at runtime, so
+            # _answer() would always hit its "no prompt configured" abort.
+            data = data or {}
+            if "system_prompt" in data:
+                self.cfg.llm.system_prompt = str(data.get("system_prompt") or "")
+            if "candidate_info" in data:
+                self.cfg.llm.candidate_info = str(data.get("candidate_info") or "")
+            log.info("Configured via overlay (system_prompt: %d chars, candidate_info: %d chars)",
+                      len(self.cfg.llm.system_prompt), len(self.cfg.llm.candidate_info))
+            asyncio.create_task(
+                self.server.broadcast({"type": "status", "text": "configured"})
+            )
+        elif action == "toggle_listening":
             self._listening = not self._listening
             state = "listening" if self._listening else "paused"
             log.info("Listening toggled -> %s", state)

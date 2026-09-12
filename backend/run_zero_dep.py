@@ -63,23 +63,51 @@ def load_yaml_config():
         log.info("Parsing configuration from %s (basic parser)", config_path)
         try:
             with open(config_path, "r", encoding="utf-8") as f:
-                current_section = None
-                for line in f:
-                    line = line.split("#", 1)[0].strip()
-                    if not line:
-                        continue
-                    if line.endswith(":"):
-                        current_section = line[:-1].strip()
-                    elif ":" in line:
-                        k, v = line.split(":", 1)
-                        k = k.strip()
-                        v = v.strip().strip('"').strip("'")
-                        if current_section == "server":
-                            if k == "host": config["server"]["host"] = v
-                            elif k == "port": config["server"]["port"] = int(v)
-                        elif current_section == "llm":
-                            if k == "model": config["llm"]["model"] = v
-                            elif k == "system_prompt": config["llm"]["system_prompt"] = v
+                raw_lines = f.readlines()
+
+            current_section = None
+            i = 0
+            while i < len(raw_lines):
+                raw_line = raw_lines[i]
+                line = raw_line.split("#", 1)[0].strip()
+                i += 1
+                if not line:
+                    continue
+                if line.endswith(":"):
+                    current_section = line[:-1].strip()
+                elif ":" in line:
+                    k, v = line.split(":", 1)
+                    k = k.strip()
+                    v = v.strip()
+                    if v in ("|", ">"):
+                        # Block scalar: collect the following more-indented
+                        # lines as the value instead of treating "|" itself
+                        # as the value (which would silently corrupt e.g. a
+                        # multi-line system_prompt into the string "|").
+                        key_indent = len(raw_line) - len(raw_line.lstrip(" "))
+                        block_lines = []
+                        while i < len(raw_lines):
+                            next_raw = raw_lines[i]
+                            if next_raw.strip() == "":
+                                block_lines.append("")
+                                i += 1
+                                continue
+                            next_indent = len(next_raw) - len(next_raw.lstrip(" "))
+                            if next_indent <= key_indent:
+                                break
+                            block_lines.append(next_raw[key_indent + 2:].rstrip("\n"))
+                            i += 1
+                        v = "\n".join(block_lines).strip() if v == "|" else " ".join(
+                            b.strip() for b in block_lines if b.strip()
+                        )
+                    else:
+                        v = v.strip('"').strip("'")
+                    if current_section == "server":
+                        if k == "host": config["server"]["host"] = v
+                        elif k == "port": config["server"]["port"] = int(v)
+                    elif current_section == "llm":
+                        if k == "model": config["llm"]["model"] = v
+                        elif k == "system_prompt": config["llm"]["system_prompt"] = v
         except Exception as e:
             log.warning("Could not parse config file: %s. Using default ports/models.", e)
             
