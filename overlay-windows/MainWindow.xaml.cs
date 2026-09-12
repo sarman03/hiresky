@@ -75,8 +75,8 @@ public partial class MainWindow : Window
         try {
             _dbService = new DatabaseService();
             _currentSession = _dbService.CreateSession();
-        } catch (Exception ex) {
-            StatusText.Text = "DB Error: " + ex.Message;
+        } catch (Exception dbEx) {
+            StatusText.Text = "DB Error: " + dbEx.Message;
         }
 
         // 5) Connect to the backend
