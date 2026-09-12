@@ -44,7 +44,7 @@ export default function HistoryPage() {
         <h1 className="text-3xl font-bold mb-6 border-b border-zinc-800 pb-4">Interviews</h1>
         
         <div className="mb-6 flex gap-2">
-          {["All", "TECHNICAL", "HR", "CODING"].map(f => (
+          {["All", "TECHNICAL", "CODING"].map(f => (
             <button
               key={f}
               onClick={() => setFilter(f)}

@@ -86,7 +86,9 @@ export default function Pricing() {
           <p className="mt-4 text-text-dim">
             We&apos;re still tuning rates against real transcription and
             model cost, so the amounts below are placeholders — not a quote.
-            What won&apos;t change is what each tier includes.
+            What won&apos;t change is what each tier includes: one plan
+            covers both technical and coding interview formats, no separate
+            add-on required.
           </p>
         </div>
 
