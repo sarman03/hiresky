@@ -16,7 +16,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-line-strong bg-ink/90 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-line-strong bg-ink">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 sm:px-8">
         <Link href="/" className="flex items-center gap-2.5">
           <Logo />
@@ -52,7 +52,7 @@ export default function Navbar() {
       </nav>
 
       {open && (
-        <div className="border-t border-line-strong bg-ink/95 backdrop-blur-xl px-6 pb-6 md:hidden">
+        <div className="border-t border-line-strong bg-ink px-6 pb-6 md:hidden">
           <ul className="flex flex-col gap-4 pt-2 text-sm text-text-dim">
             {links.map((l) => (
               <li key={l.href}>
