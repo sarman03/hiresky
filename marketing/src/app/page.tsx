@@ -7,18 +7,28 @@ import HeroDemo from "@/components/HeroDemo";
 const pipeline = [
   {
     n: "01",
+    title: "Sync",
+    body: "Add the interview to your HireSky calendar and it's ready before you are — no last-minute setup once the call starts.",
+  },
+  {
+    n: "02",
     title: "Capture",
     body: "System audio loopback and voice-activity detection pick up what's actually being said — yours and theirs. A configurable screen region grabs whatever you're looking at: an editor, a whiteboard, a shared doc.",
   },
   {
-    n: "02",
+    n: "03",
     title: "Understand",
     body: "Speech is transcribed locally with Whisper. The screen capture runs through OCR. Both feed the same prompt, so the model answers the question you asked about the thing you're looking at — not a guess.",
   },
   {
-    n: "03",
+    n: "04",
     title: "Respond",
     body: "Gemini streams the answer token by token over a local WebSocket to the overlay. It appears while you're still listening, not after the call.",
+  },
+  {
+    n: "05",
+    title: "Review",
+    body: "The transcript, a scored summary, and your trend over past sessions are waiting in your history the moment you hang up.",
   },
 ];
 
@@ -46,6 +56,21 @@ const features = [
   {
     title: "Yours to tune",
     body: "Swap the audio device, resize the OCR region, edit the model's system prompt — every stage is a small, independently configurable module.",
+  },
+];
+
+const faqs = [
+  {
+    q: "Can the interviewer or a screen recorder tell it's running?",
+    a: "No — the overlay is excluded at the OS compositor level on both macOS and Windows, not just drawn with low opacity. It never enters the frame that Zoom, Meet, Teams, or OBS capture.",
+  },
+  {
+    q: "Does it work for coding interviews, not just behavioral ones?",
+    a: "Yes — the same plan covers both. Point it at a code editor and the OCR context feeds the model exactly what's on screen, not just the audio.",
+  },
+  {
+    q: "What's the one thing it can't get around?",
+    a: "A phone or webcam physically pointed at your screen still records whatever's on it — compositor-level exclusion can't stop optics. Use HireSky in line with the policies of whatever call you're on.",
   },
 ];
 
@@ -98,6 +123,22 @@ export default function Home() {
           <HeroDemo />
         </section>
 
+        {/* Trust bar */}
+        <section className="border-b border-line px-6 py-7 sm:px-8">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-10 gap-y-3 sm:justify-between">
+            <span className="font-mono text-xs tracking-wide text-text-faint">
+              WORKS ALONGSIDE
+            </span>
+            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 font-display text-lg text-text-dim">
+              <span>Zoom</span>
+              <span className="text-line-strong">/</span>
+              <span>Google Meet</span>
+              <span className="text-line-strong">/</span>
+              <span>Microsoft Teams</span>
+            </div>
+          </div>
+        </section>
+
         {/* Stats */}
         <section className="border-b border-line px-6 py-10 sm:px-8">
           <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 sm:grid-cols-3">
@@ -130,23 +171,18 @@ export default function Home() {
           <div className="mx-auto max-w-6xl">
             <div className="grid gap-10 md:grid-cols-[0.9fr_1.1fr]">
               <h2 className="font-display text-4xl text-text sm:text-5xl">
-                Three stages, running while you talk.
+                Before, during, and after the call.
               </h2>
               <p className="max-w-[56ch] text-text-dim">
-                No copy-pasting a question into a chat window. HireSky stays
-                attached to the interview and your screen, and starts
-                reasoning before you&apos;ve finished asking.
+                No copy-pasting a question into a chat window mid-interview.
+                HireSky stays attached to the whole thing — from the calendar
+                invite to the scored transcript afterward.
               </p>
             </div>
 
-            <div className="mt-14 grid gap-10 md:grid-cols-3">
-              {pipeline.map((step, i) => (
-                <div
-                  key={step.n}
-                  className={
-                    i > 0 ? "border-line pl-0 md:border-l md:pl-10" : ""
-                  }
-                >
+            <div className="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
+              {pipeline.map((step) => (
+                <div key={step.n} className="border-t-2 border-signal-dim/40 pt-5">
                   <div className="font-mono text-sm text-signal-dim">
                     {step.n}
                   </div>
@@ -290,6 +326,37 @@ export default function Home() {
                 sizes="(min-width: 1024px) 40vw, 100vw"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-transparent to-transparent" />
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section
+          id="faq"
+          className="border-b border-line px-6 py-20 sm:px-8 sm:py-24"
+        >
+          <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-[0.7fr_1.3fr]">
+            <h2 className="font-display text-3xl text-text sm:text-4xl">
+              Quick answers.
+            </h2>
+            <div className="flex flex-col">
+              {faqs.map((f) => (
+                <div key={f.q} className="border-b border-line py-5 first:pt-0 last:border-0">
+                  <h3 className="font-semibold text-text">{f.q}</h3>
+                  <p className="mt-2 text-sm text-text-dim">{f.a}</p>
+                </div>
+              ))}
+              <p className="pt-5 text-sm text-text-dim">
+                More on{" "}
+                <Link href="/pricing" className="text-signal hover:underline">
+                  pricing
+                </Link>{" "}
+                and{" "}
+                <Link href="/contact" className="text-signal hover:underline">
+                  contact
+                </Link>
+                .
+              </p>
             </div>
           </div>
         </section>

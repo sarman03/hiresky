@@ -45,6 +45,11 @@ export default function Footer() {
                   Pricing
                 </Link>
               </li>
+              <li>
+                <Link href="/compare" className="hover:text-text">
+                  Compare
+                </Link>
+              </li>
             </ul>
           </div>
 

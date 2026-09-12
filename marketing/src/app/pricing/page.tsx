@@ -8,43 +8,48 @@ import NotifyForm from "@/components/NotifyForm";
 export const metadata: Metadata = {
   title: "Pricing — HireSky",
   description:
-    "HireSky plans for students prepping for one interview, students in an active interview loop, and bootcamps or career centers rolling it out to a cohort. Final pricing is being finalized — join the list to lock in early rates.",
+    "HireSky pricing: a 24-hour day pass or a monthly plan, both covering technical and coding interviews. Not publicly launched yet — join the list to be first in when it opens.",
 };
 
 const plans = [
   {
-    name: "STARTER",
+    name: "DAY PASS",
+    price: "₹299",
+    cadence: "/24h",
     forWhom:
-      "For one interview at a time — a single upcoming interview you want to walk into prepared.",
+      "For one interview at a time — a single upcoming round you want to walk into prepared.",
     features: [
       "Screen-share-immune overlay, macOS or Windows",
       "Live audio transcription",
-      "Fixed monthly call minutes",
-      "Community support",
+      "Covers technical and coding interview formats",
+      "24 hours of access from first use",
     ],
     cta: "Get notified",
     featured: false,
   },
   {
-    name: "PRO",
+    name: "MONTHLY",
+    price: "₹1,999",
+    cadence: "/mo",
     forWhom:
       "For students in an active interview loop — multiple rounds a week, with no usage anxiety.",
     features: [
-      "Everything in Starter",
+      "Everything in Day Pass",
       "Screen OCR context (editors, docs, whiteboards)",
-      "Unlimited call minutes",
-      "Priority model latency",
-      "Custom system prompt / persona",
+      "Unlimited interviews for 30 days",
+      "Covers technical and coding interview formats",
     ],
     cta: "Get notified",
     featured: true,
   },
   {
     name: "TEAM",
+    price: "Custom",
+    cadence: "",
     forWhom:
       "For bootcamps, coding schools, and career centers rolling HireSky out to a whole cohort.",
     features: [
-      "Everything in Pro, per seat",
+      "Everything in Monthly, per seat",
       "Centralized billing",
       "Usage analytics across the cohort",
       "Priority support",
@@ -56,16 +61,16 @@ const plans = [
 
 const faqs = [
   {
-    q: "Why isn't pricing live yet?",
-    a: "Our cost per call is driven by transcription and model usage, both of which we're still measuring against real call lengths. We'd rather ship accurate tiers than guess and re-price on you later.",
+    q: "Is this pricing final?",
+    a: "Yes — Day Pass and Monthly are the real prices you'll pay at launch, not a placeholder. Team pricing is scoped per cohort since seat count varies.",
   },
   {
     q: "Will early users be grandfathered in?",
-    a: "Yes — anyone on the notify list before public pricing locks in the early rate for as long as they keep the subscription active.",
+    a: "Yes — anyone on the notify list before public launch locks in these rates for as long as they keep the subscription active.",
   },
   {
     q: "Is there a free tier?",
-    a: "Starter is built to cover a single occasional call. Exact minutes included will be confirmed alongside pricing.",
+    a: "Not currently. Every session runs on either the Day Pass or the Monthly plan — there's no limited free usage to fall back on.",
   },
   {
     q: "Does Team require a minimum cohort size?",
@@ -81,14 +86,13 @@ export default function Pricing() {
         <div className="max-w-xl">
           <span className="font-mono text-sm text-signal">PRICING</span>
           <h1 className="mt-4 font-display text-4xl text-text sm:text-5xl">
-            Three shapes of usage. Final numbers land at launch.
+            Simple pricing. Not live yet.
           </h1>
           <p className="mt-4 text-text-dim">
-            We&apos;re still tuning rates against real transcription and
-            model cost, so the amounts below are placeholders — not a quote.
-            What won&apos;t change is what each tier includes: one plan
-            covers both technical and coding interview formats, no separate
-            add-on required.
+            The amounts below are what you&apos;ll actually pay — not a
+            placeholder. HireSky just hasn&apos;t opened to the public yet.
+            One plan covers both technical and coding interview formats, no
+            separate add-on required.
           </p>
         </div>
 
@@ -105,11 +109,15 @@ export default function Pricing() {
               <span className="font-mono text-xs text-text-dim">
                 {plan.name}
               </span>
-              <div className="mt-3 flex items-center gap-2.5">
-                <span className="font-display text-4xl text-text">—</span>
-                <span className="rounded-full border border-signal/40 px-2.5 py-0.5 font-mono text-[11px] text-signal">
-                  TBA
+              <div className="mt-3 flex items-baseline gap-1.5">
+                <span className="font-display text-4xl text-text">
+                  {plan.price}
                 </span>
+                {plan.cadence && (
+                  <span className="font-mono text-sm text-text-faint">
+                    {plan.cadence}
+                  </span>
+                )}
               </div>
               <p className="mt-4 text-sm text-text-dim">{plan.forWhom}</p>
               <ul className="mt-5 mb-6 flex-1 divide-y divide-line text-sm text-text-dim">
@@ -149,11 +157,12 @@ export default function Pricing() {
           <div className="glass relative flex flex-wrap items-center justify-between gap-8 border-0 p-9">
             <div>
               <h3 className="font-display text-2xl text-text">
-                Lock in early pricing.
+                Be first in when it opens.
               </h3>
               <p className="mt-1.5 text-sm text-text-dim">
-                We&apos;ll email the people on this list before rates go
-                public — with a discount for being early.
+                We&apos;ll email the people on this list the moment HireSky
+                is publicly available — at the prices shown above, locked
+                in for as long as you keep the subscription active.
               </p>
             </div>
             <NotifyForm />
@@ -162,7 +171,7 @@ export default function Pricing() {
 
         <div className="mt-18 grid gap-10 md:grid-cols-[0.7fr_1.3fr]">
           <h2 className="font-display text-3xl text-text">
-            Questions people ask before the numbers exist.
+            Questions people ask before launch.
           </h2>
           <div className="flex flex-col">
             {faqs.map((f) => (

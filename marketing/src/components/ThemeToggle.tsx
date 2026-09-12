@@ -1,13 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 
 type Theme = "light" | "dark";
 
 export default function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>("light");
 
-  useEffect(() => {
+  // useLayoutEffect (not useEffect) so this runs before the browser paints —
+  // the inline theme script in layout.tsx already set data-theme on <html>
+  // synchronously, so reading it here avoids a flash of the wrong icon when
+  // the persisted theme is dark. A lazy useState initializer would do the
+  // same but trips a hydration mismatch warning, since the server has no
+  // way to know the persisted theme.
+  useLayoutEffect(() => {
     const current = document.documentElement.getAttribute("data-theme");
     setTheme(current === "dark" ? "dark" : "light");
   }, []);
