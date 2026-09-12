@@ -10,8 +10,8 @@ venv/
 .env
 config.yaml
 
-# Models / caches
-models/
+# Models / caches (downloaded ML weights, not the C# overlay's Models/ source dir)
+backend/models/
 *.bin
 *.pt
 
@@ -30,3 +30,6 @@ overlay-windows/obj/
 
 # Logs
 *.log
+
+# Claude
+.claude/skills/
